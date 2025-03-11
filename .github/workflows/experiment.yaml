@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
       paths:
-        - .github/workflows/expriment.yaml
+        - .github/workflows/experiment.yaml
 
 jobs:
   experiment:
