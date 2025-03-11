@@ -2,27 +2,30 @@ name: Experiment
 
 on:
   workflow_dispatch:
-  # push:
+  push:
+      paths:
+        - .github/workflows/expriment.yaml
 
 jobs:
   experiment:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./actions/instrument/job
-        with:
-          # secrets_to_redact: '{"foo":"*"}'        
-          secrets_to_redact: '${{ toJSON(secrets) }}'
-          debug: 1
-        env:
-          OTEL_SHELL_CONFIG_GITHUB_INJECT_ON_MAIN: 'TRUE'
-          OTEL_EXPORTER_OTLP_ENDPOINT: '${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}'
-          OTEL_EXPORTER_OTLP_HEADERS: '${{ secrets.OTEL_EXPORTER_OTLP_HEADERS }}'
-          OTEL_SHELL_SDK_OUTPUT_REDIRECT: /dev/stderr
-      - uses: renovatebot/github-action@v41.0.14
-        env:
-          RENOVATE_REPOSITORIES: ${{ github.repository }}
-          RENOVATE_DRY_RUN: full
-        with:
-          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
-      - run: sudo docker logs "$(sudo docker container ls -q)"
+      - name: Install otel-bash
+        run: |
+          wget -O - https://raw.githubusercontent.com/plengauer/opentelemetry-bash/main/INSTALL.sh | sh
+
+      - name: Create otel-shell script
+        run: |
+          cat << 'EOF' > otel_test.sh
+          #!/bin/bash
+          which otel.sh
+          echo "Current shell traps:"
+          trap
+          export OTEL_TRACES_EXPORTER=console
+          export OTEL_SERVICE_NAME=shell-demo-otel
+          . /usr/bin/otel.sh
+          curl -s https://api64.ipify.org
+          EOF
+
+      - name: Run the otel script
+        run: bash otel_test.sh
