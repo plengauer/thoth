@@ -23,6 +23,7 @@ jobs:
           trap
           export OTEL_TRACES_EXPORTER=console
           export OTEL_SERVICE_NAME=shell-demo-otel
+          export OTEL_SHELL_SDK_OUTPUT_REDIRECT=/dev/stderr
           . /usr/bin/otel.sh
           curl -s https://api64.ipify.org
           EOF
