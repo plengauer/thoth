@@ -196,6 +196,8 @@ Depending on the actions in use, GitHub `secrets` or other sensitive information
     secrets_to_redact: '${{ toJSON(secrets) }}' # Redact all secrets from any attribute, span name, or log body.
 ```
 
+In case of emergency (for example arising by unexpected conflicts with highly customized runners), set the variable `OTEL_GITHUB_KILL_SWITCH` in the repository variables or GitHub organization variables to any non-empty value to disable all monitoring for the repository or the GitHub organization respectively. This will unblock all development in case of catastrophic failure while we work on a resolution to your bug report, without the necessity of ripping out the instrumentation from all workflows manually.
+
 ## Manual Instrumentation
 Import the API by referencing the `otelapi.sh` file. This is only necessary if you do not choose a fully automatic approach described above. In case you use automatic instrumentation, the API will be imported automatically for you.
 The SDK needs to be initialized and shut down manually at the start and at the end of your script respectively. All config must be set before the call to `otel_init`. You can configure the underlying SDK with the same variables as any other OpenTelemetry SDK as described <a href="https://opentelemetry.io/docs/languages/sdk-configuration/">here</a>. We recommend not just setting the environment variables, but also exporting them so that automatically injected children inherit the same configuration.

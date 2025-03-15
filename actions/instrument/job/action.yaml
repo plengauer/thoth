@@ -18,12 +18,15 @@ inputs:
   collector:
     description: 'Whether to use a collector to process data before leaving a job runner. It is used to buffer data and to redact GitHub secrets. Disabling the collector will disable these features.'
     default: auto
-  debug:
-    description: 'Enable debug logging'
-    default: ${{ runner.debug }}
   secrets_to_redact:
     description: 'A JSON object containing all secrets to redact from any attribute.'
     default: '{ "github_token": "${{ github.token }}" }'
+  debug:
+    description: 'Enable debug logging'
+    default: '${{ runner.debug }}'
+  __kill_switch:
+    description: 'Set OTEL_GITHUB_KILL_SWITCH variable for the repository or organization to any non-empty value to disable all monitoring in case of an emergency. DO NOT SET MANUALLY.'
+    default: '${{ vars.OTEL_GITHUB_KILL_SWITCH }}'
   __job_status:
     description: 'INTERNAL ONLY - DO NOT SET MANUALLY'
     default: '${{ job.status }}'

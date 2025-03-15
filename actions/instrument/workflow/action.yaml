@@ -21,4 +21,7 @@ inputs:
     default: ${{ github.event.workflow_run.run_attempt }}
   debug:
     description: 'Enable debug logging'
-    default: ${{ runner.debug }}
+    default: '${{ runner.debug }}'
+  __kill_switch:
+    description: 'Set OTEL_GITHUB_KILL_SWITCH variable for the repository or organization to any non-empty value to disable all monitoring in case of an emergency. DO NOT SET MANUALLY.'
+    default: '${{ vars.OTEL_GITHUB_KILL_SWITCH }}'
