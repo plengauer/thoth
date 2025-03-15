@@ -102,8 +102,6 @@ pid="$!"
 \wait "$pid" || \true
 assert_equals "$(\cat "$expected" | \xxd -p)" "$(\cat "$actual" | \xxd -p)"
 
-if [ "$SHELL" = 'busybox sh' ]; then exit 0; fi
-
 # check simple binary response only
 \echo "TEST 6" >&2
 port=$((port + 1))
