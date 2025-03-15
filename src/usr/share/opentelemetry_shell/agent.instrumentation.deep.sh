@@ -23,8 +23,6 @@ _otel_alias_prepend rbash _otel_inject_deep
 
 _otel_alias_prepend make _otel_inject_deep
 _otel_alias_prepend cmake _otel_inject_deep
-_otel_alias_prepend ant _otel_inject_deep
-_otel_alias_prepend gradle _otel_inject_deep
 _otel_alias_prepend bazel _otel_inject_deep
 _otel_alias_prepend ninja _otel_inject_deep
 _otel_alias_prepend rake _otel_inject_deep

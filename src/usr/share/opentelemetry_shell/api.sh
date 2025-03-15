@@ -429,7 +429,7 @@ if \[ "$_otel_shell" = dash ] || \[ "$_otel_shell" = 'busybox sh' ]; then # LEGA
   _otel_call() {
     local command="$1"; shift
     if ! _otel_string_starts_with "$command" "\\"; then local command="$(_otel_escape_arg "$command")"; fi
-    \eval "$( { \printenv; \set; } | \grep -E '^OTEL_|^PYTHONPATH=' | \cut -d = -f 1 | \sort -u | \awk '{ print $1 "=\"$" $1 "\"" }' | _otel_line_join)" "$command" "$(_otel_escape_args "$@")"
+    \eval "$( { \printenv; \set; } | \grep -E '^OTEL_|^PYTHONPATH=|^JAVA_TOOL_OPTIONS=' | \cut -d = -f 1 | \sort -u | \awk '{ print $1 "=\"$" $1 "\"" }' | _otel_line_join)" "$command" "$(_otel_escape_args "$@")"
   }
 else
   _otel_call() {

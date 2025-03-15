@@ -36,6 +36,13 @@ print(*map(lambda element: element["instrumentation"], libraries), sep="\n") # S
     if [ -d /opt/opentelemetry_shell/node_modules ]; then
       (cd /usr/share/opentelemetry_shell/ && ln --symbolic ../../../opt/opentelemetry_shell/node_modules node_modules 2> /dev/null || true)
     fi
+    if type javac 2> /dev/null && type jar 2> /dev/null && [ "$(java --version | head -n 1 | cut -d ' ' -f 2 | cut -d . -f 1)" -ge 8 ] && (! [ -r /opt/opentelemetry_shell/opentelemetry-javaagent.jar ] || [ "${OTEL_SHELL_CONFIG_INSTALL_ASSUME:-FALSE}" = FALSE ]) && (! [ -r /opt/opentelemetry_shell/rootcontextagent.jar ] || [ "${OTEL_SHELL_CONFIG_INSTALL_ASSUME:-FALSE}" = FALSE ]); then # SKIP_DEPENDENCY_CHECK
+      groupId="$(cat /opt/opentelemetry_shell/pom.xml | grep groupId | cut -d '>' -f 2- | cut -d '<' -f 1)" 
+      artifactId="$(cat /opt/opentelemetry_shell/pom.xml | grep artifactId | cut -d '>' -f 2- | cut -d '<' -f 1)"
+      version="$(cat /opt/opentelemetry_shell/pom.xml | grep version | cut -d '>' -f 2- | cut -d '<' -f 1)"
+      wget https://repo1.maven.org/maven2/"$(echo "$groupId" | tr '.' '/')"/"$artifactId"/"$version"/"$artifactId"-"$version".jar -O /opt/opentelemetry_shell/opentelemetry-javaagent.jar # SKIP_DEPENDENCY_CHECK
+      (cd /usr/share/opentelemetry_shell/agent.instrumentation.java && javac --class-path=/opt/opentelemetry_shell/opentelemetry-javaagent.jar RootContextAgent.java && jar cmf manifest.txt /opt/opentelemetry_shell/rootcontextagent.jar RootContextAgent.class) # SKIP_DEPENDENCY_CHECK
+    fi
   fi
   true
 else

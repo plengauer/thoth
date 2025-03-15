@@ -66,7 +66,8 @@ jobs:
       - run: |
           set -o pipefail
           cat src/DEBIAN/postinst | grep 'if type ' | awk '{for(i=1;i<NF;i++){if($i=="type"){print $(i+1)}}}' | while read -r command; do
-            cat src/DEBIAN/triggers | grep -qE /"$command"
+            printf '%s' "$command ... "
+            cat src/DEBIAN/triggers | grep -qE /"$command" && echo OK || (echo UNAVAILABLE && false)
           done
 
   build:
@@ -303,7 +304,7 @@ jobs:
           OTEL_EXPORTER_OTLP_HEADERS: '${{ secrets.OTEL_EXPORTER_OTLP_HEADERS }}'
       - uses: actions/checkout@v4
       - run: |
-          cat src/DEBIAN/triggers | cut -sd ' ' -f 2- | rev | cut -sd / -f 1 | rev | grep -v '^$' \
+          cat src/DEBIAN/triggers | cut -sd ' ' -f 2- | rev | cut -sd / -f 1 | rev | grep -v '^$' | sed 's/javac/default-jdk/g' | sed 's/jar/default-jdk/g' \
            | grep -vF "$(cat src/DEBIAN/control | grep '^Pre-Depends:' | cut -d : -f 2- | tr '|' ',' | tr , '\n' | tr -d ' ' | cut -d '(' -f 1 | sed 's/python3-pip/pip3/g')" \
            | sort -u | while read -r dependency; do echo "\"$dependency\""; done | jq -s tostring | xargs -0 -I {} echo 'dependencies={}' >> "$GITHUB_OUTPUT"
         id: dynamic
@@ -424,8 +425,8 @@ jobs:
             while ! "$@"; do sleep 60; done
           }
           retry sudo apt-get update
-          retry sudo -E apt-get -y install ./packages/package.deb dos2unix jq psmisc wget curl time sudo 
-          for package in parallel moreutils ncat wget2 python3 python3-pip gcc docker; do # TODO nodejs npm
+          retry sudo -E apt-get -y install ./packages/package.deb dos2unix jq psmisc wget curl time sudo
+          for package in parallel moreutils ncat wget2 python3 python3-pip gcc docker default-jdk; do # TODO nodejs npm
             sudo -E apt-get -y install "$package" || true
           done
           [ ${{ matrix.shell }} = sh ] || retry sudo -E apt-get -y install ${{ matrix.shell }} || exit 0

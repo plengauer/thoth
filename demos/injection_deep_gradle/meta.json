@@ -1,0 +1,5 @@
+{
+  "title": "Deep injection into a Gradle build",
+  "description": "This script uses gradle to build a simple project.",
+  "setup": "sudo apt-get update && sudo apt-get install -y wget default-jdk && wget https://services.gradle.org/distributions/gradle-8.13-bin.zip -P /tmp && sudo unzip -d /opt/gradle /tmp/gradle-8.13-bin.zip && sudo ln -s /opt/gradle/gradle-8.13 /opt/gradle/latest"
+}
